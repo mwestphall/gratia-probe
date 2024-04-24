@@ -58,11 +58,14 @@ class ApelRecordConverter():
         site_dns = re.sub(r'[^a-zA-Z0-9-]', '-', self.get('Site')).strip('-')  # sanitize site
         return "osg-pilot-container:%s.gratia.opensciencegrid.org" % site_dns
 
+    def start_time(self):
+        return self.getint('StartTime') or self.getint('LatestEndTime') - self.getint('WallDuration')
+
     def to_gratia_record(self):
         # TODO the following fields are not currently tracked:
         #      memory, machine name, grid
         r = Gratia.UsageRecord(RESOURCE_TYPE)
-        r.StartTime(   self.getint('StartTime'), SECONDS)
+        r.StartTime(   self.start_time(), SECONDS)
         r.EndTime(     self.getint('LatestEndTime'), SECONDS)
         r.WallDuration(self.getint('WallDuration'), SECONDS)
         r.CpuDuration( self.getint('CpuDuration'), USER, SECONDS)
@@ -75,6 +78,10 @@ class ApelRecordConverter():
         r.ReportableVOName(self.get('VO'))
 
         return r
+
+    @classmethod
+    def is_summary_record(cls, data:bytes):
+        return data.decode().startswith('APEL-summary-job-message:')
 
 
 def send_gratia_records(records: list[ApelRecordConverter]):
@@ -146,7 +153,9 @@ def main(envFile: str):
         for name in batch:
             if not dirq.lock(name):
                 continue
-            apel_records.append(ApelRecordConverter(dirq.get(name)))
+            data = dirq.get(name)
+            if ApelRecordConverter.is_summary_record(data):
+                apel_records.append(ApelRecordConverter(data))
             dirq.unlock(name)
         if apel_records:
             send_gratia_records(apel_records)
