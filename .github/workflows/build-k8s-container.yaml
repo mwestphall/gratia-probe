@@ -1,0 +1,69 @@
+---
+name: Build and Push Kubernetes Probe Docker image
+
+on:
+  push:
+    branches: [ 2.x ]
+    paths:
+      - '.github/workflows/build-k8s-container.yml'
+      - 'gratia-output-kapel/**'
+      - 'common/**'
+  repository_dispatch:
+    types:
+      - dispatch-build
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: startsWith(github.repository, 'opensciencegrid/')
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: make date tag
+      id: mkdatetag
+      run: echo "dtag=$(date +%Y%m%d-%H%M)" >> $GITHUB_OUTPUT
+
+    - name: make tags
+      id: mktags
+      env:
+        DTAG=${{ steps.mkdatetag.outputs.dtag }}
+      run: |
+        reponame="osg-htc/gratia-probe-k8s"
+        tags=()
+        for registry in docker.io hub.opensciencegrid.org; do
+            tags+=("$registry/$reponame:release")
+            tags+=("$registry/$reponame:release-$DTAG)
+        done
+
+        IFS=,
+        echo "image_tags=${tags[*]}" >> $GITHUB_OUTPUT
+        echo "ts_image=hub.opensciencegrid.org/$reponame:release-$DTAG"
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2.7.0
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2.2.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Log in to OSG Harbor
+      uses: docker/login-action@v2.2.0
+      with:
+        registry: hub.opensciencegrid.org
+        username: ${{ secrets.OSG_HARBOR_ROBOT_USER }}
+        password: ${{ secrets.OSG_HARBOR_ROBOT_PASSWORD }}
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: osg-pilot-container/Dockerfile
+        push: true
+        build-args: |
+          TIMESTAMP_IMAGE=${{ steps.mktags.outputs.ts_image }}
+        tags: "${{ steps.mktags.outputs.image_tags }}"

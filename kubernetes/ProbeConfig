@@ -12,8 +12,8 @@
 
     Title2="Probe information and functional configuration"
 
-    ProbeName="osg-pilot-container:localhost" 
-    SiteName="OSG Pilot Container Probe"
+    ProbeName="k8s:localhost"
+    SiteName="Kubernetes Probe"
     Grid="OSG"
     SuppressUnknownVORecords="0"
     SuppressNoDNRecords="0"
