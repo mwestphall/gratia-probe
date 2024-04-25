@@ -15,7 +15,7 @@ class GratiaK8sConfig:
 
         # infrastructure info
         self.infrastructure_type = env.str("INFRASTRUCTURE_TYPE", "grid")
-        self.infrastructure_description = env.str("INFRASTRUCTURE_DESCRIPTION", "APEL-KUBERNETES")
+        self.infrastructure_description = env.str("INFRASTRUCTURE_DESCRIPTION", "GRATIA-KUBERNETES")
 
         # optionally define number of nodes and processors. Should not be necessary to
         # set a default of 0 here but see https://github.com/apel/apel/issues/241
