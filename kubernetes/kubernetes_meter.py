@@ -55,9 +55,8 @@ class ApelRecordConverter():
     
 
     def site_probe(self):
-        # TODO osg-pilot-container prefix may not always be correct
         site_dns = re.sub(r'[^a-zA-Z0-9-]', '-', self.get('Site')).strip('-')  # sanitize site
-        return "osg-pilot-container:%s.gratia.opensciencegrid.org" % site_dns
+        return "kubernetes:%s.gratia.osg-htc.org" % site_dns
 
     def to_gratia_record(self):
         # TODO the following fields are not currently tracked:
