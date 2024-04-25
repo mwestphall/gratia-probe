@@ -11,7 +11,7 @@ RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.n
 WORKDIR /gratia
 COPY requirements.txt /gratia
 RUN pip install -r requirements.txt
-COPY ProbeConfig /etc/gratia/kubernetes
-COPY *.py /gratia
+COPY ProbeConfig /etc/gratia/kubernetes/
+COPY *.py /gratia/
 
 CMD python3 kubernetes_meter.py

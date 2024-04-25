@@ -1,7 +1,7 @@
 import argparse
 import datetime
 
-from gratia_output_config import GratiaK8sConfig
+from gratia_k8s_config import GratiaK8sConfig
 from dirq.QueueSimple import QueueSimple
 import os
 from datetime import datetime, timezone 
@@ -115,6 +115,7 @@ def send_gratia_records(records: list[ApelRecordConverter]):
 
 def setup_gratia(config: GratiaK8sConfig):
 
+    print(config.gratia_config_path)
     if not config.gratia_config_path or not os.path.exists(config.gratia_config_path):
         raise Exception("No valid gratia config path given")
     GratiaCore.Config = GratiaCore.ProbeConfiguration(config.gratia_config_path)

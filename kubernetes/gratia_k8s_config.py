@@ -24,6 +24,6 @@ class GratiaK8sConfig:
 
 
         # Gratia config
-        self.gratia_config_path = env.str("GRATIA_CONFIG_PATH", None)
+        self.gratia_config_path = env.str("GRATIA_CONFIG_PATH", "/etc/gratia/kubernetes/")
 
         self.gratia_probe_version = env.str("GRATIA_PROBE_VERSION", None)
