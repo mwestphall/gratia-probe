@@ -1,5 +1,7 @@
 FROM almalinux:9
+
 ARG TIMESTAMP_IMAGE=gratia-probe-k8s:release-$(date +%Y%m%d-%H%M)
+ENV GRATIA_PROBE_VERSION=$TIMESTAMP_IMAGE
 
 # Install EPEL, the OSG software base repo, and gratia-probe-common
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm && \
