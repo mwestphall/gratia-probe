@@ -66,7 +66,7 @@ class ApelRecordConverter():
         r.StartTime(   self.getint('StartTime'), SECONDS)
         r.MachineName (self.get('MachineName'))
         r.LocalJobId(  self.get('LocalJobId'))
-        r.EndTime(     self.getint('LatestEndTime'), SECONDS)
+        r.EndTime(     self.getint('EndTime'), SECONDS)
         r.WallDuration(self.getint('WallDuration'), SECONDS)
         r.CpuDuration( self.getint('CpuDuration'), USER, SECONDS)
         r.Memory(      self.getint('MemoryVirtual'), 'KB', description='RSS')
@@ -77,7 +77,6 @@ class ApelRecordConverter():
         r.LocalUserId( LOCAL_USER)
         r.VOName(      self.get('VO'))
         r.ReportableVOName(self.get('VO'))
-
         return r
 
     @classmethod
