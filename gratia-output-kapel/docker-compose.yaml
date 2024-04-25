@@ -1,6 +1,6 @@
 services:
   gratia-output:
-    image: kapel-gratia-output
+    image: hub.opensciencegrid.org/osgpreview/kapel-gratia-output:latest
     build:
       context: .
       dockerfile: Dockerfile

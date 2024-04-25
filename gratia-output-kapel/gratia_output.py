@@ -48,27 +48,28 @@ class ApelRecordConverter():
                 self.apel_dict[kv_pair[0]] = kv_pair[1]
 
     def getint(self, key):
-        return int(self.apel_dict.get(key, 0))
+        return int(float(self.apel_dict.get(key, 0)))
 
     def get(self, key):
         return self.apel_dict.get(key)
+    
 
     def site_probe(self):
         # TODO osg-pilot-container prefix may not always be correct
         site_dns = re.sub(r'[^a-zA-Z0-9-]', '-', self.get('Site')).strip('-')  # sanitize site
         return "osg-pilot-container:%s.gratia.opensciencegrid.org" % site_dns
 
-    def start_time(self):
-        return self.getint('StartTime') or self.getint('LatestEndTime') - self.getint('WallDuration')
-
     def to_gratia_record(self):
         # TODO the following fields are not currently tracked:
         #      memory, machine name, grid
         r = Gratia.UsageRecord(RESOURCE_TYPE)
-        r.StartTime(   self.start_time(), SECONDS)
+        r.StartTime(   self.getint('StartTime'), SECONDS)
+        r.MachineName (self.get('MachineName'))
+        r.LocalJobId(  self.get('LocalJobId'))
         r.EndTime(     self.getint('LatestEndTime'), SECONDS)
         r.WallDuration(self.getint('WallDuration'), SECONDS)
         r.CpuDuration( self.getint('CpuDuration'), USER, SECONDS)
+        r.Memory(      self.getint('MemoryVirtual'), 'KB', description='RSS')
         r.Processors(  self.getint('Processors'), metric="max")
         r.SiteName(    self.get('Site'))
         r.ProbeName(   self.site_probe())
@@ -80,8 +81,8 @@ class ApelRecordConverter():
         return r
 
     @classmethod
-    def is_summary_record(cls, data:bytes):
-        return data.decode().startswith('APEL-summary-job-message:')
+    def is_individual_record(cls, data:bytes):
+        return data.decode().startswith('APEL-individual-job-message:')
 
 
 def send_gratia_records(records: list[ApelRecordConverter]):
@@ -154,7 +155,7 @@ def main(envFile: str):
             if not dirq.lock(name):
                 continue
             data = dirq.get(name)
-            if ApelRecordConverter.is_summary_record(data):
+            if ApelRecordConverter.is_individual_record(data):
                 apel_records.append(ApelRecordConverter(data))
             dirq.unlock(name)
         if apel_records:
