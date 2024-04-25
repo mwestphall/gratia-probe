@@ -1,7 +1,7 @@
 import argparse
 import datetime
 
-from gratia_output_config import GratiaOutputConfig
+from gratia_output_config import GratiaK8sConfig
 from dirq.QueueSimple import QueueSimple
 import os
 from datetime import datetime, timezone 
@@ -113,7 +113,7 @@ def send_gratia_records(records: list[ApelRecordConverter]):
 
 
 
-def setup_gratia(config: GratiaOutputConfig):
+def setup_gratia(config: GratiaK8sConfig):
 
     if not config.gratia_config_path or not os.path.exists(config.gratia_config_path):
         raise Exception("No valid gratia config path given")
@@ -143,7 +143,7 @@ def batch_dirq(queue, batch_size):
 
 def main(envFile: str):
     print(f'Starting Gratia post-processor: {__file__} with envFile {envFile} at {datetime.now(tz=timezone.utc).isoformat()}')
-    cfg = GratiaOutputConfig(envFile)
+    cfg = GratiaK8sConfig(envFile)
 
     setup_gratia(cfg)
 

@@ -6,10 +6,10 @@ RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.n
     yum install -y https://repo.opensciencegrid.org/osg/23-main/osg-23-main-el9-release-latest.rpm && \
     yum install -y gratia-probe-common python3-pip
 
-WORKDIR /etc/kapel-gratia-output
-COPY requirements.txt /etc/kapel-gratia-output/
+WORKDIR /gratia
+COPY requirements.txt /gratia
 RUN pip install -r requirements.txt
-COPY gratia-config /etc/kapel-gratia-output/gratia-config
-COPY *.py /etc/kapel-gratia-output/
+COPY ProbeConfig /etc/gratia/kubernetes
+COPY *.py /gratia
 
-CMD python3 gratia_output.py
+CMD python3 kubernetes_meter.py
