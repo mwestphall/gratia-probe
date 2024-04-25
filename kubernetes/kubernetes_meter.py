@@ -123,9 +123,9 @@ def setup_gratia(config: GratiaK8sConfig):
     GratiaWrapper.ExclusiveLock()
 
     # Register gratia
-    GratiaCore.RegisterReporter(config.gratia_reporter)
-    GratiaCore.RegisterService(config.gratia_service, config.gratia_probe_version)
-    GratiaCore.setProbeBatchManager(config.gratia_probe_manager)
+    GratiaCore.RegisterReporter("kubernetes_meter")
+    GratiaCore.RegisterService("Kubernetes", config.gratia_probe_version)
+    GratiaCore.setProbeBatchManager("kubernetes")
 
     GratiaCore.Initialize(config.gratia_config_path)
 
