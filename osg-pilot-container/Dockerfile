@@ -2,14 +2,19 @@
 #   docker build -f osg-pilot-container/Dockerfile .
 
 # build rpms in a temporary container
-FROM opensciencegrid/software-base:3.6-el8-release as build-container
+ARG BASE_OS=el8
+ARG BASE_OSG_SERIES=23
+ARG BASE_YUM_REPO=release
+
+FROM opensciencegrid/software-base:$BASE_OSG_SERIES-$BASE_OS-$BASE_YUM_REPO as build-container
 
 LABEL name="OSG Pilot Container Probe Container"
 
 RUN yum install -y \
                 --disablerepo='osg-upcoming*' \
-                --enablerepo=devops \
-                osg-build
+                --enablerepo=osg-internal-development \
+                osg-build-deps \
+    && install-osg-build.sh V2-branch
 
 COPY . /root/gratia-probe
 
@@ -33,14 +38,19 @@ RUN osg-build rpmbuild /root/bld
 
 
 # build real container; copying in rpm results
-FROM opensciencegrid/software-base:3.6-el8-release
+FROM opensciencegrid/software-base:$BASE_OSG_SERIES-$BASE_OS-$BASE_YUM_REPO
+
+ARG BASE_OS=el8
+ARG BASE_OSG_SERIES=23
+ARG BASE_YUM_REPO=release
+
 
 COPY --from=build-container /root/bld/_build_results /root/RPMS
 
 # install probe rpms
 RUN yum install -y \
                 --disablerepo='osg-upcoming*' \
-                --enablerepo=devops \
+                --enablerepo=osg-internal \
                 /root/RPMS/gratia-probe-{osg-pilot-container,common}-*-*.rpm
 
 # do minimal probe configuration
