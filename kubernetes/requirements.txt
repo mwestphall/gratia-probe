@@ -1,4 +1,4 @@
 # Useful for handling configuration
-environs
+environs==11.0.0
 # Useful for adding messages to outgoing queue
-dirq
+dirq==1.8
