@@ -143,6 +143,9 @@ def batch_dirq(queue, batch_size):
 
 def main(envFile: str):
     print(f'Starting Gratia post-processor: {__file__} with envFile {envFile} at {datetime.now(tz=timezone.utc).isoformat()}')
+    with open(envFile) as envf:
+        print(f'===== envFile contents: =====\n{envf.read()}')
+
     cfg = GratiaK8sConfig(envFile)
 
     setup_gratia(cfg)
