@@ -32,15 +32,16 @@ jobs:
         DTAG=${{ steps.mkdatetag.outputs.dtag }}
       run: |
         reponame="osg-htc/gratia-probe-k8s"
+        OSGVER=23
         tags=()
         for registry in docker.io hub.opensciencegrid.org; do
-            tags+=("$registry/$reponame:release")
-            tags+=("$registry/$reponame:release-$DTAG)
+            tags+=("$registry/$reponame:$OSGVER-release")
+            tags+=("$registry/$reponame:$OSGVER-release-$DTAG)
         done
 
         IFS=,
         echo "image_tags=${tags[*]}" >> $GITHUB_OUTPUT
-        echo "ts_image=hub.opensciencegrid.org/$reponame:release-$DTAG"
+        echo "ts_image=hub.opensciencegrid.org/$reponame:$OSGVER-release-$DTAG"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2.7.0
