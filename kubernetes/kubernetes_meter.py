@@ -13,6 +13,7 @@ import gratia.common.GratiaCore as GratiaCore
 import gratia.common.GratiaWrapper as GratiaWrapper
 import gratia.common.Gratia as Gratia
 import gratia.common.config as config
+from urllib.parse import urlparse
 
 probe_version = "%%%RPMVERSION%%%"
 
@@ -55,8 +56,15 @@ class ApelRecordConverter():
     
 
     def site_probe(self):
-        site_dns = re.sub(r'[^a-zA-Z0-9-]', '-', self.get('Site')).strip('-')  # sanitize site
-        return "kubernetes:%s.gratia.osg-htc.org" % site_dns
+        """ Get the domain from the record's SubmitHost, removing scheme and path if present """
+        submit_host = self.get('SubmitHost')
+        # Hack: Make sure the submitHost starts with a protocol so urllib can parse it
+        if not re.match('[A-Za-z]*://', submit_host):
+            submit_host = f"https://{submit_host}"
+        probe_domain = urlparse(submit_host).hostname
+        if not probe_domain:
+            raise Exception(f"Unable to determine probe domain from submit host {self.get('SubmitHost')}")
+        return probe_domain
 
     def to_gratia_record(self):
         # TODO the following fields are not currently tracked:
