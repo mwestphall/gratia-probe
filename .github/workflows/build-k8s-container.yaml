@@ -29,7 +29,7 @@ jobs:
     - name: make tags
       id: mktags
       env:
-        DTAG=${{ steps.mkdatetag.outputs.dtag }}
+        DTAG: ${{ steps.mkdatetag.outputs.dtag }}
       run: |
         reponame="osg-htc/gratia-probe-k8s"
         OSGVER=23
