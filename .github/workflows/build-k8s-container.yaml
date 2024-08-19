@@ -36,7 +36,7 @@ jobs:
         tags=()
         for registry in docker.io hub.opensciencegrid.org; do
             tags+=("$registry/$reponame:$OSGVER-release")
-            tags+=("$registry/$reponame:$OSGVER-release-$DTAG)
+            tags+=("$registry/$reponame:$OSGVER-release-$DTAG")
         done
 
         IFS=,
