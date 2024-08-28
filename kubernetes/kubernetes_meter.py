@@ -52,6 +52,9 @@ class ApelRecordConverter():
     def getint(self, key):
         return int(float(self.apel_dict.get(key, 0)))
 
+    def getint_roundup(self, key):
+        return int(float(self.apel_dict.get(key, 0)) + 0.5)
+
     def get(self, key):
         return self.apel_dict.get(key)
     
@@ -78,7 +81,7 @@ class ApelRecordConverter():
         r.WallDuration(self.getint('WallDuration'), SECONDS)
         r.CpuDuration( self.getint('CpuDuration'), USER, SECONDS)
         r.Memory(      self.getint('MemoryVirtual'), 'KB', description='RSS')
-        r.Processors(  self.getint('Processors'), metric="max")
+        r.Processors(  self.getint_roundup('Processors'), metric="max")
         r.SiteName(    self.get('Site'))
         r.ProbeName(   self.site_probe())
         r.Grid(        self.get('InfrastructureType')) # Best guess
