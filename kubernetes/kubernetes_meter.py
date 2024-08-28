@@ -44,9 +44,10 @@ class ApelRecordConverter():
         self.apel_dict = {}
         lines = apel_record.split('\n')
         for line in lines:
-            kv_pair = [v.strip() for v in line.split(':')]
-            if len(kv_pair) == 2:
-                self.apel_dict[kv_pair[0]] = kv_pair[1]
+            # Handle case where apel values contain colons (eg. 'SubmitHost: http://localhost:8000')
+            kv_pair_match = re.match(r'([A-Za-z0-9_]+)\s*:\s*([^\s].*[^\s])\s*',line)
+            if kv_pair_match:
+                self.apel_dict[kv_pair_match[1]] = kv_pair_match[2]
 
     def getint(self, key):
         return int(float(self.apel_dict.get(key, 0)))
