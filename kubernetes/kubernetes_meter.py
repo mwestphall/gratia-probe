@@ -4,6 +4,7 @@ import datetime
 from gratia_k8s_config import GratiaK8sConfig
 from dirq.QueueSimple import QueueSimple
 import os
+from math import ceil
 from datetime import datetime, timezone 
 import re
 
@@ -44,12 +45,15 @@ class ApelRecordConverter():
         self.apel_dict = {}
         lines = apel_record.split('\n')
         for line in lines:
-            kv_pair = [v.strip() for v in line.split(':')]
+            kv_pair = [v.strip() for v in line.split(':', maxsplit=1)]
             if len(kv_pair) == 2:
                 self.apel_dict[kv_pair[0]] = kv_pair[1]
 
     def getint(self, key):
         return int(float(self.apel_dict.get(key, 0)))
+
+    def getint_roundup(self, key):
+        return ceil(float(self.apel_dict.get(key, 0)))
 
     def get(self, key):
         return self.apel_dict.get(key)
@@ -77,7 +81,7 @@ class ApelRecordConverter():
         r.WallDuration(self.getint('WallDuration'), SECONDS)
         r.CpuDuration( self.getint('CpuDuration'), USER, SECONDS)
         r.Memory(      self.getint('MemoryVirtual'), 'KB', description='RSS')
-        r.Processors(  self.getint('Processors'), metric="max")
+        r.Processors(  self.getint_roundup('Processors'), metric="max")
         r.SiteName(    self.get('Site'))
         r.ProbeName(   self.site_probe())
         r.Grid(        self.get('InfrastructureType')) # Best guess
@@ -151,10 +155,9 @@ def batch_dirq(queue, batch_size):
 
 def main(envFile: str):
     print(f'Starting Gratia post-processor: {__file__} with envFile {envFile} at {datetime.now(tz=timezone.utc).isoformat()}')
-    with open(envFile) as envf:
-        print(f'===== envFile contents: =====\n{envf.read()}')
 
     cfg = GratiaK8sConfig(envFile)
+    print(f'===== Gratia K8s Config: =====\n{str(cfg)}')
 
     setup_gratia(cfg)
 

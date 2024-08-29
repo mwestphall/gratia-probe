@@ -27,3 +27,15 @@ class GratiaK8sConfig:
         self.gratia_config_path = env.str("GRATIA_CONFIG_PATH", "/etc/gratia/kubernetes/")
 
         self.gratia_probe_version = env.str("GRATIA_PROBE_VERSION", None)
+
+
+    def __str__(self) -> str:
+        return f"""
+OUTPUT_PATH={self.output_path}
+INFRASTRUCTURE_TYPE={self.infrastructure_type}
+INFRASTRUCTURE_DESC={self.infrastructure_description}
+NODECOUNT={self.nodecount}
+PROCESSORS={self.processors}
+GRATIA_CONFIG_PATH={self.gratia_config_path}
+GRATIA_PROBE_VERSION={self.gratia_probe_version}
+"""
