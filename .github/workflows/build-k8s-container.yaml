@@ -34,7 +34,7 @@ jobs:
         reponame="osg-htc/gratia-probe-k8s"
         OSGVER=23
         tags=()
-        for registry in docker.io hub.opensciencegrid.org; do
+        for registry in hub.opensciencegrid.org; do
             tags+=("$registry/$reponame:$OSGVER-release")
             tags+=("$registry/$reponame:$OSGVER-release-$DTAG")
         done
