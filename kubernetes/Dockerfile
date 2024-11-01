@@ -8,7 +8,7 @@ ARG GID=10000
 
 # Install EPEL, the OSG software base repo, and gratia-probe-common
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm && \
-    yum install -y https://repo.opensciencegrid.org/osg/$OSG_SERIES-main/osg-$OSG_SERIES-main-el9-release-latest.rpm && \
+    yum install -y https://repo.osg-htc.org/osg/$OSG_SERIES-main/osg-$OSG_SERIES-main-el9-release-latest.rpm && \
     yum install -y gratia-probe-common python3-pip
 
 # Make probe runnable as non-root
